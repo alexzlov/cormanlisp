@@ -67,7 +67,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MACHINE:I386 /NODEFAULTLIB:libcmt %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>$(SolutionDir)\CormanLispServer\bin\CormanLispStatic.lib;$(SolutionDir)\zlib\zlib.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)\clbootapp.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
