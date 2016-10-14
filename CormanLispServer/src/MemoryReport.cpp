@@ -70,10 +70,10 @@ static bool checkSimpleCharVector(LispObj str)
 static void writeHeapInfo(LispHeap* heap, FILE* file, char* name)
 {
     fprintf(file, "Heap: %s  Generation: %x\n", name, heap->generation);
-    fprintf(file, "  Start: %08.8x", heap->start);
-    fprintf(file, "  End: %08.8x", heap->end);
-    fprintf(file, "  Current: %08.8x", heap->current);
-    fprintf(file, "  Overflow: %08.8x", heap->overflow);
+    fprintf(file, "  Start: %08.8x", (int) heap->start);
+    fprintf(file, "  End: %08.8x", (int) heap->end);
+    fprintf(file, "  Current: %08.8x", (int) heap->current);
+    fprintf(file, "  Overflow: %08.8x", (int) heap->overflow);
     fprintf(file, "\n\n");
 }
 
@@ -114,14 +114,14 @@ static void outputUvector(FILE* file, LispObj uvector)
                 fprintf(file, "{Function: Environment = NIL");
             else
                 fprintf(file, "{Function: Environment = %08.8x", functionEnvironment(uvector));
-            fprintf(file, ", Code Buffer = %08.8x}", UVECTOR(uvector) + FUNCTION_ADDRESS);
+            fprintf(file, ", Code Buffer = %08.8x}", (int) (UVECTOR(uvector) + FUNCTION_ADDRESS));
             break;
         case KFunctionType:	
             if (functionEnvironment(uvector) == NIL)
                 fprintf(file, "{Kernel Function: Environment = NIL");
             else
                 fprintf(file, "{Kernel Function: Environment = %08.8x", functionEnvironment(uvector));
-            fprintf(file, ", C Function Pointer = %08.8x}", UVECTOR(uvector) + FUNCTION_ADDRESS);
+            fprintf(file, ", C Function Pointer = %08.8x}", (int) (UVECTOR(uvector) + FUNCTION_ADDRESS));
             break;
         case StructureType:	
             fprintf(file, "{Structure}");
@@ -734,8 +734,8 @@ void writeThreadStackReport(FILE* file, ThreadRecord* th)
     int index = 0;
 
     fprintf(file, "Thread ID %08.8x Stack:\n", th->threadID);
-    fprintf(file, "  Stack start (base) address: %08.8x\n", start);
-    fprintf(file, "  Stack end (top of stack) address: %08.8x\n", end);
+    fprintf(file, "  Stack start (base) address: %08.8x\n", (int) start);
+    fprintf(file, "  Stack end (top of stack) address: %08.8x\n", (int) end);
     fprintf(file, "\n");
 
     // make a copy of the stack
@@ -764,7 +764,7 @@ void writeThreadStackReport(FILE* file, ThreadRecord* th)
     {
         if (stack[x - end].ebp != 0)
         {
-            fprintf(file, "    %08.8x: %08.8x  ", x, *x);
+            fprintf(file, "    %08.8x: %08.8x  ", (int) x, (int) *x);
             fprintf(file, " {EBP Link: %08.8x}\n", stack[x - end].value);
             continue;
         }
@@ -795,7 +795,7 @@ void writeThreadStackReport(FILE* file, ThreadRecord* th)
             if (!name || name[0] == 0)
                 name = "<Unknown>";
 
-            fprintf(file, "    %08.8x: %08.8x  ", x, *x);
+            fprintf(file, "    %08.8x: %08.8x  ", (int) x, (int) *x);
             fprintf(file, " {Return address: %08.8x [%s + %x]}\n", stack[x - end].value, name, 
                 addr - funcBase);
             continue;
@@ -803,7 +803,7 @@ void writeThreadStackReport(FILE* file, ThreadRecord* th)
 
         if (EVEN(i))
         {
-            fprintf(file, "    %08.8x: %08.8x  ", x, *x);
+            fprintf(file, "    %08.8x: %08.8x  ", (int) x, (int) *x);
             if (inAnyLispHeap(*x) && *(unsigned long*)x == JumpBufferMarker)
             {
                 outputReferencedObject(file, *(x - 4), 0);	// x -> EDI
@@ -853,7 +853,7 @@ void writeThreadStackReport(FILE* file, ThreadRecord* th)
         }
         else
         {
-            fprintf(file, "    %08.8x: %08.8x  Foreign stack\n", x, *x);
+            fprintf(file, "    %08.8x: %08.8x  Foreign stack\n", (int) x, (int) *x);
         }
         if ((i < index) && ((unsigned long)x) <= qv[(i * 2) + STACK_MARKERS_Index])
             i++;
@@ -1101,7 +1101,7 @@ void writeMemoryReport(void* address, CONTEXT* context)
             
             if (address != (void*)(-2))
             {
-                fprintf(file, "The operating system has reported a memory access violation at the address %08.8x.\n\n", address);
+                fprintf(file, "The operating system has reported a memory access violation at the address %08.8x.\n\n", (int) address);
                 fprintf(file, "Registers:\n"); 
 
                 fprintf(file, "  EAX: %08.8x\n", context->Eax); 
